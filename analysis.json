@@ -1,0 +1,2053 @@
+﻿{
+    "workflow_name":  "Migrate Organization",
+    "repository":  "hcsc-devops/gh-migration",
+    "workflow_id":  297716162,
+    "total_runs":  28,
+    "by_status":  {
+                      "failure":  [
+                                      30138120605,
+                                      30136005812,
+                                      30102678971,
+                                      30102564736,
+                                      29439001673,
+                                      29438954308,
+                                      29438479192,
+                                      29438372352,
+                                      29426371719,
+                                      29370262830,
+                                      29368735923,
+                                      29352451479,
+                                      29351124269,
+                                      29341360241,
+                                      29285313350,
+                                      29284407920,
+                                      29120767866
+                                  ],
+                      "cancelled":  [
+                                        30468978644,
+                                        30315476244,
+                                        27710393369
+                                    ],
+                      "skipped":  [
+
+                                  ],
+                      "success":  [
+                                      30138184567,
+                                      30118754116,
+                                      29439303730,
+                                      29369656329,
+                                      29369438826,
+                                      27769709228,
+                                      27712279703
+                                  ],
+                      "in_progress":  [
+
+                                      ]
+                  },
+    "success_reason_counts":  {
+                                  "All jobs completed successfully (5/5). Migration scope parsed from logs: migrated repos=2, failed repos=1.":  1,
+                                  "All jobs completed successfully (4/5). Migration scope parsed from logs: migrated repos=2, failed repos=1.":  1,
+                                  "All jobs completed successfully (4/5). Migration scope parsed from logs: migrated repos=2, failed repos=0.":  5
+                              },
+    "runs":  [
+                 {
+                     "run_id":  30834334725,
+                     "run_number":  28,
+                     "name":  "Migrate Organization",
+                     "status":  "queued",
+                     "conclusion":  null,
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "chore/migrate-org-self-hosted-runner",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-08-03T16:54:56Z",
+                     "updated_at":  "2026-08-03T16:54:56Z",
+                     "started_at":  "2026-08-03T16:54:56Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/30834334725",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  0,
+                                                             "total_repos_migrated":  0
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  0,
+                                                                  "total_jobs":  1,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Run status is \u0027queued\u0027 and conclusion is \u0027\u0027."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  0,
+                                                               "total_repos_migrated":  0
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  30468978644,
+                     "run_number":  27,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "cancelled",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "feat/migrate-org-matrix-parallel",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-29T16:04:19Z",
+                     "updated_at":  "2026-07-29T22:04:42Z",
+                     "started_at":  "2026-07-29T16:04:19Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/30468978644",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  0
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  6,
+                                                                  "total_jobs":  7,
+                                                                  "cancelled_jobs":  1,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Run was cancelled. Cancelled jobs: migrate-org."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  0
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  30315476244,
+                     "run_number":  26,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "cancelled",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-27T23:51:16Z",
+                     "updated_at":  "2026-07-28T05:51:39Z",
+                     "started_at":  "2026-07-27T23:51:16Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/30315476244",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  0
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  4,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  1,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Run was cancelled. Cancelled jobs: migrate-org."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  0
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  30138184567,
+                     "run_number":  25,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-25T01:17:22Z",
+                     "updated_at":  "2026-07-25T01:24:58Z",
+                     "started_at":  "2026-07-25T01:17:22Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/30138184567",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Custom properties migration",
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Rulesets migration",
+                                                             "Teams migration",
+                                                             "Variables migration",
+                                                             "Webhooks migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  7,
+                                                             "total_repos_migrated":  2
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  1,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  4
+                                                              },
+                                              "reason":  "All jobs completed successfully (4/5). Migration scope parsed from logs: migrated repos=2, failed repos=0."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Custom properties migration",
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Rulesets migration",
+                                                               "Teams migration",
+                                                               "Variables migration",
+                                                               "Webhooks migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  7,
+                                                               "total_repos_migrated":  2
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  30138120605,
+                     "run_number":  24,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-25T01:15:29Z",
+                     "updated_at":  "2026-07-25T01:16:43Z",
+                     "started_at":  "2026-07-25T01:15:29Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/30138120605",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+                                                                  "sitoriesCount"
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  1,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+                                                                    "sitoriesCount"
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  1,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  30136005812,
+                     "run_number":  23,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-25T00:19:14Z",
+                     "updated_at":  "2026-07-27T23:50:30Z",
+                     "started_at":  "2026-07-27T23:49:15Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/30136005812",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  30118754116,
+                     "run_number":  22,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-24T18:54:39Z",
+                     "updated_at":  "2026-07-24T19:01:07Z",
+                     "started_at":  "2026-07-24T18:54:39Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/30118754116",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Custom properties migration",
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Rulesets migration",
+                                                             "Teams migration",
+                                                             "Variables migration",
+                                                             "Webhooks migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  7,
+                                                             "total_repos_migrated":  2
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  1,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  4
+                                                              },
+                                              "reason":  "All jobs completed successfully (4/5). Migration scope parsed from logs: migrated repos=2, failed repos=0."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Custom properties migration",
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Rulesets migration",
+                                                               "Teams migration",
+                                                               "Variables migration",
+                                                               "Webhooks migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  7,
+                                                               "total_repos_migrated":  2
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  30102678971,
+                     "run_number":  21,
+                     "name":  ".github/workflows/migrate-org.yml",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "push",
+                     "head_branch":  "add-scripts",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-24T14:49:53Z",
+                     "updated_at":  "2026-07-24T14:49:53Z",
+                     "started_at":  "2026-07-24T14:49:53Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/30102678971",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  0,
+                                                             "total_repos_migrated":  0
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  0,
+                                                                  "total_jobs":  1,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Workflow concluded as failure; no failed job metadata found."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  0,
+                                                               "total_repos_migrated":  0
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  30102564736,
+                     "run_number":  20,
+                     "name":  ".github/workflows/migrate-org.yml",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "push",
+                     "head_branch":  "add-scripts",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-24T14:48:15Z",
+                     "updated_at":  "2026-07-24T14:48:15Z",
+                     "started_at":  "2026-07-24T14:48:15Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/30102564736",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  0,
+                                                             "total_repos_migrated":  0
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  0,
+                                                                  "total_jobs":  1,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Workflow concluded as failure; no failed job metadata found."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  0,
+                                                               "total_repos_migrated":  0
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29439303730,
+                     "run_number":  19,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-15T18:08:02Z",
+                     "updated_at":  "2026-07-15T19:10:27Z",
+                     "started_at":  "2026-07-15T19:03:00Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29439303730",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Custom properties migration",
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Rulesets migration",
+                                                             "Teams migration",
+                                                             "Variables migration",
+                                                             "Webhooks migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  7,
+                                                             "total_repos_migrated":  2
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  1,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  4
+                                                              },
+                                              "reason":  "All jobs completed successfully (4/5). Migration scope parsed from logs: migrated repos=2, failed repos=0."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Custom properties migration",
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Rulesets migration",
+                                                               "Teams migration",
+                                                               "Variables migration",
+                                                               "Webhooks migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  7,
+                                                               "total_repos_migrated":  2
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29439001673,
+                     "run_number":  18,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-15T18:03:24Z",
+                     "updated_at":  "2026-07-15T18:04:53Z",
+                     "started_at":  "2026-07-15T18:03:24Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29439001673",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29438954308,
+                     "run_number":  17,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-15T18:02:41Z",
+                     "updated_at":  "2026-07-15T18:04:35Z",
+                     "started_at":  "2026-07-15T18:02:41Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29438954308",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29438479192,
+                     "run_number":  16,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-15T17:55:32Z",
+                     "updated_at":  "2026-07-15T17:57:02Z",
+                     "started_at":  "2026-07-15T17:55:32Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29438479192",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+                                                                  "sitoriesCount"
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  1,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+                                                                    "sitoriesCount"
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  1,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29438372352,
+                     "run_number":  15,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-15T17:53:56Z",
+                     "updated_at":  "2026-07-15T17:55:16Z",
+                     "started_at":  "2026-07-15T17:53:56Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29438372352",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29426371719,
+                     "run_number":  14,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-15T15:03:24Z",
+                     "updated_at":  "2026-07-15T15:04:56Z",
+                     "started_at":  "2026-07-15T15:03:24Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29426371719",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+                                                                  "sitoriesCount"
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  1,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+                                                                    "sitoriesCount"
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  1,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29370262830,
+                     "run_number":  13,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-14T21:38:32Z",
+                     "updated_at":  "2026-07-15T17:51:17Z",
+                     "started_at":  "2026-07-15T17:49:52Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29370262830",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+                                                                  "sitoriesCount"
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  1,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+                                                                    "sitoriesCount"
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  1,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29369656329,
+                     "run_number":  12,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-14T21:28:30Z",
+                     "updated_at":  "2026-07-15T18:03:22Z",
+                     "started_at":  "2026-07-15T18:01:52Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29369656329",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Custom properties migration",
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Rulesets migration",
+                                                             "Teams migration",
+                                                             "Variables migration",
+                                                             "Webhooks migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  7,
+                                                             "total_repos_migrated":  2
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  1,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  4
+                                                              },
+                                              "reason":  "All jobs completed successfully (4/5). Migration scope parsed from logs: migrated repos=2, failed repos=0."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Custom properties migration",
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Rulesets migration",
+                                                               "Teams migration",
+                                                               "Variables migration",
+                                                               "Webhooks migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  7,
+                                                               "total_repos_migrated":  2
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29369438826,
+                     "run_number":  11,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-14T21:24:57Z",
+                     "updated_at":  "2026-07-14T21:26:27Z",
+                     "started_at":  "2026-07-14T21:24:57Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29369438826",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Custom properties migration",
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Rulesets migration",
+                                                             "Teams migration",
+                                                             "Variables migration",
+                                                             "Webhooks migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  7,
+                                                             "total_repos_migrated":  2
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  1,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  4
+                                                              },
+                                              "reason":  "All jobs completed successfully (4/5). Migration scope parsed from logs: migrated repos=2, failed repos=0."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Custom properties migration",
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Rulesets migration",
+                                                               "Teams migration",
+                                                               "Variables migration",
+                                                               "Webhooks migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  7,
+                                                               "total_repos_migrated":  2
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29368735923,
+                     "run_number":  10,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-14T21:13:32Z",
+                     "updated_at":  "2026-07-14T21:14:46Z",
+                     "started_at":  "2026-07-14T21:13:32Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29368735923",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29352451479,
+                     "run_number":  9,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-14T17:07:22Z",
+                     "updated_at":  "2026-07-14T17:08:47Z",
+                     "started_at":  "2026-07-14T17:07:22Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29352451479",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29351124269,
+                     "run_number":  8,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-14T16:47:52Z",
+                     "updated_at":  "2026-07-14T16:52:49Z",
+                     "started_at":  "2026-07-14T16:51:26Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29351124269",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29341360241,
+                     "run_number":  7,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-14T14:33:12Z",
+                     "updated_at":  "2026-07-14T14:34:39Z",
+                     "started_at":  "2026-07-14T14:33:12Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29341360241",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29285313350,
+                     "run_number":  6,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-13T21:10:25Z",
+                     "updated_at":  "2026-07-13T21:11:49Z",
+                     "started_at":  "2026-07-13T21:10:25Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29285313350",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29284407920,
+                     "run_number":  5,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-13T20:56:35Z",
+                     "updated_at":  "2026-07-13T21:01:44Z",
+                     "started_at":  "2026-07-13T21:00:22Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29284407920",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Migrate organization (GitHub.com source)"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Migrate organization (GitHub.com source)."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  29120767866,
+                     "run_number":  4,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-07-10T20:15:15Z",
+                     "updated_at":  "2026-07-10T21:18:54Z",
+                     "started_at":  "2026-07-10T20:15:15Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/29120767866",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+
+                                                              ],
+                                             "actions":  [
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  0,
+                                                             "total_actions":  2,
+                                                             "total_repos_migrated":  1
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+                                                                   "apply-org-assets::Download org assets",
+                                                                   "migrate-org::Validate target enterprise for org migration"
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  2,
+                                                                  "skipped_jobs":  3,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  0
+                                                              },
+                                              "reason":  "Failed jobs: apply-org-assets, migrate-org. Failed steps: apply-org-assets::Download org assets, migrate-org::Validate target enterprise for org migration."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration"
+                                                           ],
+                                               "repos_failed":  [
+
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  0,
+                                                               "total_actions":  2,
+                                                               "total_repos_migrated":  1
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  27769709228,
+                     "run_number":  3,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-06-18T15:16:51Z",
+                     "updated_at":  "2026-06-18T16:07:24Z",
+                     "started_at":  "2026-06-18T15:16:51Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/27769709228",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+                                                                  "_LINES"
+                                                              ],
+                                             "actions":  [
+                                                             "Custom properties migration",
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Rulesets migration",
+                                                             "Teams migration",
+                                                             "Variables migration",
+                                                             "Webhooks migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  1,
+                                                             "total_actions":  7,
+                                                             "total_repos_migrated":  2
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  0,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  5
+                                                              },
+                                              "reason":  "All jobs completed successfully (5/5). Migration scope parsed from logs: migrated repos=2, failed repos=1."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Custom properties migration",
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Rulesets migration",
+                                                               "Teams migration",
+                                                               "Variables migration",
+                                                               "Webhooks migration"
+                                                           ],
+                                               "repos_failed":  [
+                                                                    "_LINES"
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  1,
+                                                               "total_actions":  7,
+                                                               "total_repos_migrated":  2
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  27712279703,
+                     "run_number":  2,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-06-17T18:52:51Z",
+                     "updated_at":  "2026-06-17T22:10:49Z",
+                     "started_at":  "2026-06-17T18:52:51Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/27712279703",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                    "hcsc-devops/gh-migration"
+                                                                ],
+                                             "repos_failed":  [
+                                                                  "_Type"
+                                                              ],
+                                             "actions":  [
+                                                             "Custom properties migration",
+                                                             "Organization-level migration (gh gei migrate-org)",
+                                                             "Repository-by-repository migration",
+                                                             "Rulesets migration",
+                                                             "Teams migration",
+                                                             "Variables migration",
+                                                             "Webhooks migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  1,
+                                                             "total_actions":  7,
+                                                             "total_repos_migrated":  2
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  1,
+                                                                  "total_jobs":  5,
+                                                                  "cancelled_jobs":  0,
+                                                                  "successful_jobs":  4
+                                                              },
+                                              "reason":  "All jobs completed successfully (4/5). Migration scope parsed from logs: migrated repos=2, failed repos=1."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Custom properties migration",
+                                                               "Organization-level migration (gh gei migrate-org)",
+                                                               "Repository-by-repository migration",
+                                                               "Rulesets migration",
+                                                               "Teams migration",
+                                                               "Variables migration",
+                                                               "Webhooks migration"
+                                                           ],
+                                               "repos_failed":  [
+                                                                    "_Type"
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "hcsc-devops/GHA-CICD-Pipelines-Admin",
+                                                                      "hcsc-devops/gh-migration"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  1,
+                                                               "total_actions":  7,
+                                                               "total_repos_migrated":  2
+                                                           }
+                                           }
+                 },
+                 {
+                     "run_id":  27710393369,
+                     "run_number":  1,
+                     "name":  "Migrate Organization",
+                     "status":  "completed",
+                     "conclusion":  "cancelled",
+                     "event":  "workflow_dispatch",
+                     "head_branch":  "main",
+                     "path":  ".github/workflows/migrate-org.yml",
+                     "created_at":  "2026-06-17T18:19:30Z",
+                     "updated_at":  "2026-06-17T18:24:49Z",
+                     "started_at":  "2026-06-17T18:19:30Z",
+                     "html_url":  "https://github.com/hcsc-devops/gh-migration/actions/runs/27710393369",
+                     "migration_scope":  {
+                                             "repos_migrated":  [
+                                                                    "gradledemo",
+                                                                    "Groovy_Script_Design_Session",
+                                                                    "Groovy_Script_Refactoring_Project",
+                                                                    "harness-test",
+                                                                    "hcsc-devops/gh-migration",
+                                                                    "hns-minitest-1760050036",
+                                                                    "Jenkins_Shared_Libraries",
+                                                                    "jenkins-maven-regression",
+                                                                    "Open_Source_Jenkins",
+                                                                    "pre-receive-hook",
+                                                                    "servicenow-github-test",
+                                                                    "sonar-gradle"
+                                                                ],
+                                             "repos_failed":  [
+                                                                  "_LINES",
+                                                                  "Visibility"
+                                                              ],
+                                             "actions":  [
+                                                             "Custom properties migration",
+                                                             "Rulesets migration",
+                                                             "Variables migration"
+                                                         ],
+                                             "teams_migrated":  0,
+                                             "webhooks_migrated":  0,
+                                             "rulesets_migrated":  0,
+                                             "variables_migrated":  0,
+                                             "custom_properties":  0,
+                                             "summary":  {
+                                                             "total_repos_failed":  2,
+                                                             "total_actions":  3,
+                                                             "total_repos_migrated":  12
+                                                         }
+                                         },
+                     "outcome_analysis":  {
+                                              "failed_steps":  [
+
+                                                               ],
+                                              "job_summary":  {
+                                                                  "failed_jobs":  0,
+                                                                  "skipped_jobs":  0,
+                                                                  "total_jobs":  6,
+                                                                  "cancelled_jobs":  4,
+                                                                  "successful_jobs":  2
+                                                              },
+                                              "reason":  "Run was cancelled. Cancelled jobs: apply-org-assets, archive-source-repos, migrate-repos, post-migration."
+                                          },
+                     "execution_details":  {
+                                               "actions":  [
+                                                               "Custom properties migration",
+                                                               "Rulesets migration",
+                                                               "Variables migration"
+                                                           ],
+                                               "repos_failed":  [
+                                                                    "_LINES",
+                                                                    "Visibility"
+                                                                ],
+                                               "repos_migrated":  [
+                                                                      "gradledemo",
+                                                                      "Groovy_Script_Design_Session",
+                                                                      "Groovy_Script_Refactoring_Project",
+                                                                      "harness-test",
+                                                                      "hcsc-devops/gh-migration",
+                                                                      "hns-minitest-1760050036",
+                                                                      "Jenkins_Shared_Libraries",
+                                                                      "jenkins-maven-regression",
+                                                                      "Open_Source_Jenkins",
+                                                                      "pre-receive-hook",
+                                                                      "servicenow-github-test",
+                                                                      "sonar-gradle"
+                                                                  ],
+                                               "summary":  {
+                                                               "total_repos_failed":  2,
+                                                               "total_actions":  3,
+                                                               "total_repos_migrated":  12
+                                                           }
+                                           }
+                 }
+             ]
+}
