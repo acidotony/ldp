@@ -1,0 +1,962 @@
+name: Migrate Organization
+
+# Migrates an entire org using GEI + org-level assets (rulesets, variables, custom properties) via REST API.
+# - GitHub.com source: uses `gh gei migrate-org` (migrates repos, teams, team access, member privileges, webhooks)
+# - GHES source: falls back to repo-by-repo migration (org migration not supported from GHES)
+#
+# Required secrets:
+#   SOURCE_GITHUB_TOKEN       - PAT for prod GHES (ghe.fyiblue.com)
+#   SOURCE_TEST_GITHUB_TOKEN  - PAT for test GHES (ghe.test.fyiblue.com)
+#   SOURCE_GITHUB_COM_TOKEN   - PAT for github.com (used when source is github.com)
+#   DEST_GITHUB_TOKEN         - PAT for destination (github.com)
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_org:
+        description: "Source organization name"
+        required: true
+        type: string
+      destination_org:
+        description: "Destination organization name on GitHub.com"
+        required: true
+        type: string
+      target_enterprise:
+        description: "Destination enterprise name (required for org migration from GitHub.com)"
+        required: false
+        type: string
+      source_api_url:
+        description: "Source API URL. Select github.com if source is on GitHub.com."
+        required: true
+        type: choice
+        options:
+          - "https://ghe.test.fyiblue.com/api/v3"
+          - "https://ghe.fyiblue.com/api/v3"
+          - "https://github.com"
+        default: "https://github.com"
+      runner_type:
+        description: "Runner type (also selects the respective token)"
+        required: true
+        type: choice
+        options:
+          - test
+          - prod
+        default: prod
+      include_archived:
+        description: "Include archived repositories (GHES fallback only)"
+        required: false
+        type: boolean
+        default: false
+      max_concurrent:
+        description: "Maximum number of concurrent migrations (GHES fallback only, Max: 10)"
+        required: true
+        type: string
+        default: "10"
+      migrate_rulesets:
+        description: "Migrate organization rulesets to destination"
+        required: false
+        type: boolean
+        default: true
+      migrate_variables:
+        description: "Migrate organization Actions variables to destination"
+        required: false
+        type: boolean
+        default: true
+      migrate_custom_properties:
+        description: "Migrate custom property schemas and values to destination"
+        required: false
+        type: boolean
+        default: true
+      archive_source_repos:
+        description: "Archive source repositories after successful migration"
+        required: false
+        type: boolean
+        default: true
+      set_visibility_internal:
+        description: "Set migrated repositories to internal visibility"
+        required: false
+        type: boolean
+        default: true
+      assign_teams:
+        description: "Trigger team assignment after migration (GHES fallback only - org migration handles teams)"
+        required: false
+        type: boolean
+        default: true
+
+env:
+  DEST_GITHUB_TOKEN: ${{ secrets.DEST_GITHUB_TOKEN }}
+
+jobs:
+  # =============================================================================
+  # MIGRATION JOB
+  # GitHub.com source: gh gei migrate-org (true org migration)
+  # GHES source: enumerate repos + gh gei migrate-repo (repo-by-repo fallback)
+  # =============================================================================
+  migrate-org:
+    timeout-minutes: 1440
+    runs-on: ${{ github.event.inputs.runner_type == 'prod' && fromJSON(vars.PROD_SCHEDULE_RUNNERS) || fromJSON(vars.TEST_RUNNERS) }}
+    outputs:
+      migration_type: ${{ steps.detect_type.outputs.migration_type }}
+    steps:
+      - name: Detect migration type
+        id: detect_type
+        run: |
+          if [ "${{ github.event.inputs.source_api_url }}" = "https://github.com" ]; then
+            echo "migration_type=org" >> $GITHUB_OUTPUT
+            echo "Source is GitHub.com - will use gh gei migrate-org"
+          else
+            echo "migration_type=repo" >> $GITHUB_OUTPUT
+            echo "Source is GHES - will use repo-by-repo migration (org migration not supported from GHES)"
+          fi
+      - name: Validate target enterprise for org migration
+        if: steps.detect_type.outputs.migration_type == 'org'
+        run: |
+          if [ -z "${{ github.event.inputs.target_enterprise }}" ]; then
+            echo "::error::target_enterprise is required when migrating from GitHub.com (org migration creates a new org within the target enterprise)"
+            exit 1
+          fi
+      - name: Install GitHub Enterprise Importer extension if needed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! gh extension list | grep -q "gei"; then
+            echo "Installing GitHub Enterprise Importer extension..."
+            gh extension install github/gh-gei
+          else
+            echo "GitHub Enterprise Importer extension is already installed"
+          fi
+          gh gei --version || true
+      # -----------------------------------------------------------------------
+      # GitHub.com → GitHub.com: gh gei migrate-org
+      # -----------------------------------------------------------------------
+      - name: "Migrate organization (GitHub.com source)"
+        if: steps.detect_type.outputs.migration_type == 'org'
+        env:
+          SRC_PAT: ${{ secrets.SOURCE_GITHUB_COM_TOKEN }}
+          DEST_PAT: ${{ env.DEST_GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.SOURCE_GITHUB_COM_TOKEN }}
+        run: |
+          set -x
+          export no_proxy=ghcloudmigrationbucket.s3.amazonaws.com,.fyiblue.com,.s3.amazonaws.com,.amazonaws.com,.s3.us-east-1.amazonaws.com,.s3.dualstack.us-east-1.amazonaws.com,.s3.dualstack.amazonaws.com,.s3-accelerate.amazonaws.com,.s3-accelerate.dualstack.amazonaws.com
+          export NO_PROXY=$no_proxy
+          echo "Running org migration: ${{ github.event.inputs.source_org }} -> ${{ github.event.inputs.destination_org }}"
+          echo "Target enterprise: ${{ github.event.inputs.target_enterprise }}"
+          gh gei migrate-org \
+            --github-source-org "${{ github.event.inputs.source_org }}" \
+            --github-target-org "${{ github.event.inputs.destination_org }}" \
+            --github-target-enterprise "${{ github.event.inputs.target_enterprise }}" \
+            --github-source-pat "$SRC_PAT" \
+            --github-target-pat "$DEST_PAT" \
+            --verbose 2>&1 | tee migrate_org.log
+          exit_code=${PIPESTATUS[0]}
+          if [ $exit_code -ne 0 ]; then
+            echo "::error::Organization migration failed (exit code $exit_code)"
+            exit $exit_code
+          fi
+          echo "Organization migration completed successfully"
+      # -----------------------------------------------------------------------
+      # After org migration, enumerate migrated repos for post-migration steps
+      # -----------------------------------------------------------------------
+      - name: "Enumerate migrated repos (GitHub.com source)"
+        if: steps.detect_type.outputs.migration_type == 'org'
+        env:
+          DEST_PAT: ${{ env.DEST_GITHUB_TOKEN }}
+          DEST_ORG: ${{ github.event.inputs.destination_org }}
+          SOURCE_ORG: ${{ github.event.inputs.source_org }}
+        run: |
+          set -e
+          echo "Listing repos in destination org after migration..."
+          PAGE=1
+          PER_PAGE=100
+          while true; do
+            RESPONSE=$(curl -s -H "Authorization: Bearer $DEST_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/orgs/$DEST_ORG/repos?per_page=$PER_PAGE&page=$PAGE&type=all")
+            COUNT=$(echo "$RESPONSE" | jq 'length')
+            if [ "$COUNT" -eq 0 ]; then
+              break
+            fi
+            echo "$RESPONSE" | jq -r '.[].name' | while IFS= read -r REPO; do
+              echo "$REPO $REPO $SOURCE_ORG $DEST_ORG" >> migration_successes.txt
+            done
+            if [ "$COUNT" -lt "$PER_PAGE" ]; then
+              break
+            fi
+            PAGE=$((PAGE + 1))
+          done
+          REPO_COUNT=$(wc -l < migration_successes.txt | xargs)
+          echo "Found $REPO_COUNT repos in destination org"
+      # -----------------------------------------------------------------------
+      # GHES → GitHub.com: enumerate repos + repo-by-repo migration
+      # -----------------------------------------------------------------------
+      - name: "Enumerate source repos (GHES source)"
+        id: enumerate_ghes
+        if: steps.detect_type.outputs.migration_type == 'repo'
+        env:
+          SRC_PAT: ${{ github.event.inputs.runner_type == 'prod' && secrets.SOURCE_GITHUB_TOKEN || secrets.SOURCE_TEST_GITHUB_TOKEN }}
+          SOURCE_API_URL: ${{ github.event.inputs.source_api_url }}
+          SOURCE_ORG: ${{ github.event.inputs.source_org }}
+          INCLUDE_ARCHIVED: ${{ github.event.inputs.include_archived }}
+        run: |
+          set -e
+          API_BASE="$SOURCE_API_URL"
+          echo "Listing repositories in org: $SOURCE_ORG"
+          PAGE=1
+          PER_PAGE=100
+          ALL_REPOS=""
+          while true; do
+            RESPONSE=$(curl -s -H "Authorization: Bearer $SRC_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "$API_BASE/orgs/$SOURCE_ORG/repos?per_page=$PER_PAGE&page=$PAGE&type=all")
+            if echo "$RESPONSE" | jq -e '.message' > /dev/null 2>&1; then
+              ERROR_MSG=$(echo "$RESPONSE" | jq -r '.message')
+              if [ "$ERROR_MSG" != "null" ]; then
+                echo "::error::API error: $ERROR_MSG"
+                exit 1
+              fi
+            fi
+            COUNT=$(echo "$RESPONSE" | jq 'length')
+            if [ "$COUNT" -eq 0 ]; then
+              break
+            fi
+            if [ "$INCLUDE_ARCHIVED" = "true" ]; then
+              PAGE_REPOS=$(echo "$RESPONSE" | jq -r '.[].name')
+            else
+              PAGE_REPOS=$(echo "$RESPONSE" | jq -r '.[] | select(.archived == false) | .name')
+            fi
+            if [ -n "$PAGE_REPOS" ]; then
+              if [ -n "$ALL_REPOS" ]; then
+                ALL_REPOS="$ALL_REPOS"$'\n'"$PAGE_REPOS"
+              else
+                ALL_REPOS="$PAGE_REPOS"
+              fi
+            fi
+            if [ "$COUNT" -lt "$PER_PAGE" ]; then
+              break
+            fi
+            PAGE=$((PAGE + 1))
+          done
+          DEST_ORG="${{ github.event.inputs.destination_org }}"
+          echo "$ALL_REPOS" | while IFS= read -r REPO; do
+            [ -z "$REPO" ] && continue
+            echo "$REPO $REPO $SOURCE_ORG $DEST_ORG"
+          done > repo_list.txt
+          REPO_COUNT=$(grep -c '.' repo_list.txt || echo "0")
+          echo "repo_count=$REPO_COUNT" >> $GITHUB_OUTPUT
+          echo "Found $REPO_COUNT repositories to migrate"
+          cat repo_list.txt
+      - name: "Migrate repos in parallel (GHES source)"
+        if: steps.detect_type.outputs.migration_type == 'repo' && steps.enumerate_ghes.outputs.repo_count != '0'
+        env:
+          SRC_PAT: ${{ github.event.inputs.runner_type == 'prod' && secrets.SOURCE_GITHUB_TOKEN || secrets.SOURCE_TEST_GITHUB_TOKEN }}
+          DEST_PAT: ${{ env.DEST_GITHUB_TOKEN }}
+          GH_PAT: ${{ github.event.inputs.runner_type == 'prod' && secrets.SOURCE_GITHUB_TOKEN || secrets.SOURCE_TEST_GITHUB_TOKEN }}
+          SOURCE_API_URL: ${{ github.event.inputs.source_api_url }}
+        continue-on-error: true
+        run: |
+          set -x
+          set +e
+          REPO_FILE="repo_list.txt"
+          MAX_CONCURRENT=$(printf "%d" "${{ github.event.inputs.max_concurrent }}")
+          PIDS=()
+          i=0
+          running=0
+          export no_proxy=ghcloudmigrationbucket.s3.amazonaws.com,.fyiblue.com,.s3.amazonaws.com,.amazonaws.com,.s3.us-east-1.amazonaws.com,.s3.dualstack.us-east-1.amazonaws.com,.s3.dualstack.amazonaws.com,.s3-accelerate.amazonaws.com,.s3-accelerate.dualstack.amazonaws.com
+          export NO_PROXY=$no_proxy
+          echo "GitHub CLI version:"
+          gh --version
+          echo "GitHub CLI extensions:"
+          gh extension list
+          GHES_FLAG="--ghes-api-url \"$SOURCE_API_URL\""
+          echo "Migrating repositories from ${{ github.event.inputs.source_org }} to ${{ github.event.inputs.destination_org }}..."
+          while IFS= read -r LINE || [ -n "$LINE" ]; do
+            [ -z "$LINE" ] && continue
+            SRC_REPO=$(echo "$LINE" | awk '{print $1}')
+            TGT_REPO=$(echo "$LINE" | awk '{print $2}')
+            SRC_ORG=$(echo "$LINE" | awk '{print $3}')
+            TGT_ORG=$(echo "$LINE" | awk '{print $4}')
+            echo "Starting migration: $SRC_ORG/$SRC_REPO -> $TGT_ORG/$TGT_REPO"
+            CMD="gh gei migrate-repo \
+              --github-source-org \"$SRC_ORG\" \
+              --github-target-org \"$TGT_ORG\" \
+              --source-repo \"$SRC_REPO\" \
+              --target-repo \"$TGT_REPO\" \
+              --github-source-pat \"$SRC_PAT\" \
+              --github-target-pat \"$DEST_PAT\" \
+              $GHES_FLAG \
+              --verbose"
+            eval $CMD > "migrate_${SRC_REPO}.log" 2>&1 &
+            PIDS[$i]=$!
+            REPO_LINES[$i]="$LINE"
+            i=$((i+1))
+            running=$((running+1))
+            # Manage concurrency
+            if [ "$running" -ge "$MAX_CONCURRENT" ]; then
+              wait -n
+              for idx in "${!PIDS[@]}"; do
+                if ! kill -0 ${PIDS[$idx]} 2>/dev/null; then
+                  wait ${PIDS[$idx]}
+                  exit_code=$?
+                  if [ $exit_code -ne 0 ]; then
+                    echo "::warning::Migration failed for: ${REPO_LINES[$idx]}"
+                    echo "${REPO_LINES[$idx]}" >> migration_failures.txt
+                  else
+                    echo "Migration succeeded for: ${REPO_LINES[$idx]}"
+                    echo "${REPO_LINES[$idx]}" >> migration_successes.txt
+                  fi
+                  unset PIDS[$idx]
+                  unset REPO_LINES[$idx]
+                  running=$((running-1))
+                  break
+                fi
+              done
+            fi
+          done < "$REPO_FILE"
+          # Wait for remaining processes
+          if [ ${#PIDS[@]} -gt 0 ]; then
+            echo "Waiting for ${#PIDS[@]} remaining migrations..."
+            for idx in "${!PIDS[@]}"; do
+              if [ -n "${PIDS[$idx]+x}" ]; then
+                wait ${PIDS[$idx]}
+                exit_code=$?
+                if [ $exit_code -ne 0 ]; then
+                  echo "::warning::Migration failed for: ${REPO_LINES[$idx]}"
+                  echo "${REPO_LINES[$idx]}" >> migration_failures.txt
+                else
+                  echo "Migration succeeded for: ${REPO_LINES[$idx]}"
+                  echo "${REPO_LINES[$idx]}" >> migration_successes.txt
+                fi
+              fi
+            done
+          fi
+      # -----------------------------------------------------------------------
+      # Common steps for both migration types
+      # -----------------------------------------------------------------------
+      - name: Print migration logs
+        if: always()
+        run: |
+          echo "Migration log files:"
+          for f in migrate_*.log; do
+            if [ -f "$f" ]; then
+              echo "--- $f ---"
+              cat "$f"
+              echo ""
+            fi
+          done
+          echo "Searching for octoshift logs:"
+          find . -name "*octoshift*.log" -type f | while read -r log; do
+            echo "--- $log ---"
+            cat "$log"
+            echo ""
+          done
+      - name: Print failures
+        id: print_failures
+        run: |
+          if [ -f migration_failures.txt ] && [ -s migration_failures.txt ]; then
+            echo "Migration failures:"
+            sort -u migration_failures.txt -o migration_failures.txt
+            cat migration_failures.txt
+            echo "has_failures=true" >> $GITHUB_OUTPUT
+          else
+            echo "No migration failures detected."
+            echo "has_failures=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Print successes
+        id: print_successes
+        run: |
+          if [ -f migration_successes.txt ] && [ -s migration_successes.txt ]; then
+            echo "Migration successes:"
+            sort -u migration_successes.txt -o migration_successes.txt
+            cat migration_successes.txt
+            echo "has_successes=true" >> $GITHUB_OUTPUT
+          else
+            echo "No successful migrations detected."
+            echo "has_successes=false" >> $GITHUB_OUTPUT
+          fi
+      - name: "Delete failed migrations from destination (GHES fallback)"
+        if: steps.detect_type.outputs.migration_type == 'repo' && steps.print_failures.outputs.has_failures == 'true'
+        env:
+          DEST_PAT: ${{ env.DEST_GITHUB_TOKEN }}
+        run: |
+          if [ -f migration_failures.txt ]; then
+            echo "Deleting failed migrations from destination..."
+            while IFS= read -r LINE || [ -n "$LINE" ]; do
+              [ -z "$LINE" ] && continue
+              TGT_REPO=$(echo "$LINE" | awk '{print $2}')
+              TGT_ORG=$(echo "$LINE" | awk '{print $4}')
+              echo "Deleting $TGT_ORG/$TGT_REPO"
+              curl -s -L -X DELETE \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer $DEST_PAT" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/$TGT_ORG/$TGT_REPO"
+            done < migration_failures.txt
+          fi
+      - name: Upload migration successes
+        if: steps.print_successes.outputs.has_successes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-successes
+          path: migration_successes.txt
+          retention-days: 1
+
+      - name: Add migration results to step summary
+        run: |
+          MIGRATION_TYPE="${{ steps.detect_type.outputs.migration_type }}"
+          echo "## Migration Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "$MIGRATION_TYPE" = "org" ]; then
+            echo "**Migration Type:** Organization migration (\`gh gei migrate-org\`)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Migration Type:** Repo-by-repo migration (\`gh gei migrate-repo\` — GHES source)" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "**Source Org:** \`${{ github.event.inputs.source_org }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Destination Org:** \`${{ github.event.inputs.destination_org }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          SUCCESS_COUNT=0
+          FAILURE_COUNT=0
+          if [ -f migration_successes.txt ] && [ -s migration_successes.txt ]; then
+            SUCCESS_COUNT=$(wc -l < migration_successes.txt | xargs)
+          fi
+          if [ -f migration_failures.txt ] && [ -s migration_failures.txt ]; then
+            FAILURE_COUNT=$(wc -l < migration_failures.txt | xargs)
+          fi
+          TOTAL_COUNT=$((SUCCESS_COUNT + FAILURE_COUNT))
+          echo "**Total Repositories:** $TOTAL_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "- Successful: $SUCCESS_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "- Failed: $FAILURE_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "$MIGRATION_TYPE" = "org" ]; then
+            echo "### Organization-Level Assets (migrated by GEI)" >> $GITHUB_STEP_SUMMARY
+            echo "- Teams" >> $GITHUB_STEP_SUMMARY
+            echo "- Team access to repositories" >> $GITHUB_STEP_SUMMARY
+            echo "- Member privileges" >> $GITHUB_STEP_SUMMARY
+            echo "- Organization-level webhooks (must be re-enabled)" >> $GITHUB_STEP_SUMMARY
+            echo "- Default branch name setting" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "> **Note:** Team membership is not migrated. Add members to teams manually." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f migration_successes.txt ] && [ -s migration_successes.txt ]; then
+            echo "### Successfully Migrated Repos" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            while IFS= read -r LINE || [ -n "$LINE" ]; do
+              [ -z "$LINE" ] && continue
+              SRC_REPO=$(echo "$LINE" | awk '{print $1}')
+              TGT_REPO=$(echo "$LINE" | awk '{print $2}')
+              SRC_ORG=$(echo "$LINE" | awk '{print $3}')
+              TGT_ORG=$(echo "$LINE" | awk '{print $4}')
+              echo "- \`$SRC_ORG/$SRC_REPO\` -> [$TGT_ORG/$TGT_REPO](https://github.com/$TGT_ORG/$TGT_REPO)" >> $GITHUB_STEP_SUMMARY
+            done < migration_successes.txt
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f migration_failures.txt ] && [ -s migration_failures.txt ]; then
+            echo "### Failed Migrations" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            while IFS= read -r LINE || [ -n "$LINE" ]; do
+              [ -z "$LINE" ] && continue
+              SRC_REPO=$(echo "$LINE" | awk '{print $1}')
+              SRC_ORG=$(echo "$LINE" | awk '{print $3}')
+              echo "- \`$SRC_ORG/$SRC_REPO\`" >> $GITHUB_STEP_SUMMARY
+            done < migration_failures.txt
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+  # =============================================================================
+  # EXPORT & APPLY ORG-LEVEL ASSETS (rulesets, variables, custom properties)
+  # These are NOT migrated by GEI even with migrate-org
+  # =============================================================================
+  export-org-assets:
+    runs-on: ${{ github.event.inputs.runner_type == 'prod' && fromJSON(vars.PROD_SCHEDULE_RUNNERS) || fromJSON(vars.TEST_RUNNERS) }}
+    needs: migrate-org
+    steps:
+      - name: Export organization-level assets
+        env:
+          SRC_PAT: ${{ github.event.inputs.source_api_url == 'https://github.com' && secrets.SOURCE_GITHUB_COM_TOKEN || (github.event.inputs.runner_type == 'prod' && secrets.SOURCE_GITHUB_TOKEN || secrets.SOURCE_TEST_GITHUB_TOKEN) }}
+          SOURCE_API_URL: ${{ github.event.inputs.source_api_url }}
+          SOURCE_ORG: ${{ github.event.inputs.source_org }}
+          MIGRATE_RULESETS: ${{ github.event.inputs.migrate_rulesets }}
+          MIGRATE_VARIABLES: ${{ github.event.inputs.migrate_variables }}
+          MIGRATE_CUSTOM_PROPERTIES: ${{ github.event.inputs.migrate_custom_properties }}
+        run: |
+          set -e
+          mkdir -p org_assets
+          # Determine API base
+          if [ "$SOURCE_API_URL" = "https://github.com" ]; then
+            API_BASE="https://api.github.com"
+          else
+            API_BASE="$SOURCE_API_URL"
+          fi
+          echo "Exporting org-level assets from: $SOURCE_ORG"
+          # --- Rulesets ---
+          if [ "$MIGRATE_RULESETS" = "true" ]; then
+            echo "Exporting rulesets..."
+            RULESETS=$(curl -s -H "Authorization: Bearer $SRC_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "$API_BASE/orgs/$SOURCE_ORG/rulesets?per_page=100")
+            if echo "$RULESETS" | jq -e 'type == "array"' > /dev/null 2>&1; then
+              RULESET_COUNT=$(echo "$RULESETS" | jq 'length')
+              echo "Found $RULESET_COUNT rulesets"
+              echo "[]" > org_assets/rulesets.json
+              for RULESET_ID in $(echo "$RULESETS" | jq -r '.[].id'); do
+                DETAIL=$(curl -s -H "Authorization: Bearer $SRC_PAT" \
+                  -H "Accept: application/vnd.github+json" \
+                  -H "X-GitHub-Api-Version: 2022-11-28" \
+                  "$API_BASE/orgs/$SOURCE_ORG/rulesets/$RULESET_ID")
+                jq --argjson detail "$DETAIL" '. += [$detail]' org_assets/rulesets.json > org_assets/rulesets_tmp.json
+                mv org_assets/rulesets_tmp.json org_assets/rulesets.json
+              done
+            else
+              echo "No rulesets found or API not available for this source"
+              echo "[]" > org_assets/rulesets.json
+            fi
+          else
+            echo "Skipping rulesets export"
+            echo "[]" > org_assets/rulesets.json
+          fi
+          # --- Organization Variables ---
+          if [ "$MIGRATE_VARIABLES" = "true" ]; then
+            echo "Exporting organization variables..."
+            VARIABLES=$(curl -s -H "Authorization: Bearer $SRC_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "$API_BASE/orgs/$SOURCE_ORG/actions/variables?per_page=100")
+            if echo "$VARIABLES" | jq -e '.variables' > /dev/null 2>&1; then
+              VAR_COUNT=$(echo "$VARIABLES" | jq '.total_count')
+              echo "Found $VAR_COUNT variables"
+              echo "$VARIABLES" | jq '.variables' > org_assets/variables.json
+            else
+              echo "No variables found or API not available"
+              echo "[]" > org_assets/variables.json
+            fi
+          else
+            echo "Skipping variables export"
+            echo "[]" > org_assets/variables.json
+          fi
+          # --- Custom Properties ---
+          if [ "$MIGRATE_CUSTOM_PROPERTIES" = "true" ]; then
+            echo "Exporting custom property schemas..."
+            PROPERTIES=$(curl -s -H "Authorization: Bearer $SRC_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "$API_BASE/orgs/$SOURCE_ORG/properties/schema")
+            if echo "$PROPERTIES" | jq -e 'type == "array"' > /dev/null 2>&1; then
+              PROP_COUNT=$(echo "$PROPERTIES" | jq 'length')
+              echo "Found $PROP_COUNT custom property schemas"
+              echo "$PROPERTIES" > org_assets/custom_properties.json
+            else
+              echo "No custom properties found or API not available"
+              echo "[]" > org_assets/custom_properties.json
+            fi
+          else
+            echo "Skipping custom properties export"
+            echo "[]" > org_assets/custom_properties.json
+          fi
+          # --- Organization Secrets (names only) ---
+          echo "Listing organization secret names (values cannot be exported)..."
+          SECRETS=$(curl -s -H "Authorization: Bearer $SRC_PAT" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$API_BASE/orgs/$SOURCE_ORG/actions/secrets?per_page=100")
+          if echo "$SECRETS" | jq -e '.secrets' > /dev/null 2>&1; then
+            SECRET_COUNT=$(echo "$SECRETS" | jq '.total_count')
+            echo "Found $SECRET_COUNT secrets (names only - values must be manually recreated)"
+            echo "$SECRETS" | jq '[.secrets[] | {name: .name, visibility: .visibility, selected_repositories_url: .selected_repositories_url}]' > org_assets/secrets_report.json
+          else
+            echo "No secrets found or API not available"
+            echo "[]" > org_assets/secrets_report.json
+          fi
+          echo "Export complete. Assets saved to org_assets/"
+          ls -la org_assets/
+      - name: Upload org assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: org-assets
+          path: org_assets/
+          retention-days: 1
+
+  apply-org-assets:
+    runs-on: ${{ github.event.inputs.runner_type == 'prod' && fromJSON(vars.PROD_SCHEDULE_RUNNERS) || fromJSON(vars.TEST_RUNNERS) }}
+    needs: [migrate-org, export-org-assets]
+    if: always() && needs.migrate-org.result != 'cancelled'
+    steps:
+      - name: Download org assets
+        uses: actions/download-artifact@v4
+        with:
+          name: org-assets
+          path: org_assets/
+
+      - name: Download migration successes
+        uses: actions/download-artifact@v4
+        with:
+          name: migration-successes
+        continue-on-error: true
+
+      - name: Apply rulesets to destination org
+        if: github.event.inputs.migrate_rulesets == 'true'
+        env:
+          DEST_PAT: ${{ env.DEST_GITHUB_TOKEN }}
+          DEST_ORG: ${{ github.event.inputs.destination_org }}
+        run: |
+          set +e
+          RULESETS_FILE="org_assets/rulesets.json"
+          if [ ! -f "$RULESETS_FILE" ] || [ "$(jq 'length' "$RULESETS_FILE")" -eq 0 ]; then
+            echo "No rulesets to apply."
+            exit 0
+          fi
+          RULESET_COUNT=$(jq 'length' "$RULESETS_FILE")
+          echo "Applying $RULESET_COUNT rulesets to $DEST_ORG..."
+          for i in $(seq 0 $((RULESET_COUNT - 1))); do
+            RULESET_NAME=$(jq -r ".[$i].name" "$RULESETS_FILE")
+            echo "Creating ruleset: $RULESET_NAME"
+            PAYLOAD=$(jq ".[$i] | del(.id, .node_id, ._links, .source, .source_type, .created_at, .updated_at)" "$RULESETS_FILE")
+            ACTOR_COUNT=$(echo "$PAYLOAD" | jq '.bypass_actors // [] | length')
+            if [ "$ACTOR_COUNT" -gt 0 ]; then
+              echo "  Ruleset has $ACTOR_COUNT bypass actors - applying as-is (manual review may be needed)"
+            fi
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+              -H "Authorization: Bearer $DEST_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -d "$PAYLOAD" \
+              "https://api.github.com/orgs/$DEST_ORG/rulesets")
+            HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+            if [ "$HTTP_CODE" = "201" ]; then
+              echo "  Created ruleset: $RULESET_NAME"
+            elif [ "$HTTP_CODE" = "422" ]; then
+              echo "::warning::Ruleset '$RULESET_NAME' may already exist or has validation errors: $BODY"
+              echo "$RULESET_NAME: $BODY" >> ruleset_warnings.txt
+            else
+              echo "::warning::Failed to create ruleset '$RULESET_NAME' (HTTP $HTTP_CODE): $BODY"
+              echo "$RULESET_NAME: HTTP $HTTP_CODE - $BODY" >> ruleset_warnings.txt
+            fi
+          done
+      - name: Apply variables to destination org
+        if: github.event.inputs.migrate_variables == 'true'
+        env:
+          DEST_PAT: ${{ env.DEST_GITHUB_TOKEN }}
+          DEST_ORG: ${{ github.event.inputs.destination_org }}
+        run: |
+          set +e
+          VARS_FILE="org_assets/variables.json"
+          if [ ! -f "$VARS_FILE" ] || [ "$(jq 'length' "$VARS_FILE")" -eq 0 ]; then
+            echo "No variables to apply."
+            exit 0
+          fi
+          VAR_COUNT=$(jq 'length' "$VARS_FILE")
+          echo "Creating $VAR_COUNT variables in $DEST_ORG..."
+          for i in $(seq 0 $((VAR_COUNT - 1))); do
+            VAR_NAME=$(jq -r ".[$i].name" "$VARS_FILE")
+            VAR_VALUE=$(jq -r ".[$i].value" "$VARS_FILE")
+            VAR_VISIBILITY=$(jq -r ".[$i].visibility" "$VARS_FILE")
+            echo "Creating variable: $VAR_NAME (visibility: $VAR_VISIBILITY)"
+            PAYLOAD=$(jq -n \
+              --arg name "$VAR_NAME" \
+              --arg value "$VAR_VALUE" \
+              --arg visibility "$VAR_VISIBILITY" \
+              '{name: $name, value: $value, visibility: $visibility}')
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+              -H "Authorization: Bearer $DEST_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -d "$PAYLOAD" \
+              "https://api.github.com/orgs/$DEST_ORG/actions/variables")
+            HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+            if [ "$HTTP_CODE" = "201" ]; then
+              echo "  Created variable: $VAR_NAME"
+            elif [ "$HTTP_CODE" = "409" ]; then
+              echo "  Variable '$VAR_NAME' already exists, updating..."
+              curl -s -X PATCH \
+                -H "Authorization: Bearer $DEST_PAT" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                -d "$PAYLOAD" \
+                "https://api.github.com/orgs/$DEST_ORG/actions/variables/$VAR_NAME"
+            else
+              echo "::warning::Failed to create variable '$VAR_NAME' (HTTP $HTTP_CODE): $BODY"
+            fi
+          done
+      - name: Apply custom properties to destination org
+        if: github.event.inputs.migrate_custom_properties == 'true'
+        env:
+          DEST_PAT: ${{ env.DEST_GITHUB_TOKEN }}
+          DEST_ORG: ${{ github.event.inputs.destination_org }}
+          SRC_PAT: ${{ github.event.inputs.source_api_url == 'https://github.com' && secrets.SOURCE_GITHUB_COM_TOKEN || (github.event.inputs.runner_type == 'prod' && secrets.SOURCE_GITHUB_TOKEN || secrets.SOURCE_TEST_GITHUB_TOKEN) }}
+          SOURCE_API_URL: ${{ github.event.inputs.source_api_url }}
+          SOURCE_ORG: ${{ github.event.inputs.source_org }}
+        run: |
+          set +e
+          PROPS_FILE="org_assets/custom_properties.json"
+          if [ ! -f "$PROPS_FILE" ] || [ "$(jq 'length' "$PROPS_FILE")" -eq 0 ]; then
+            echo "No custom properties to apply."
+            exit 0
+          fi
+          PROP_COUNT=$(jq 'length' "$PROPS_FILE")
+          echo "Creating $PROP_COUNT custom property schemas in $DEST_ORG..."
+          for i in $(seq 0 $((PROP_COUNT - 1))); do
+            PROP_NAME=$(jq -r ".[$i].property_name" "$PROPS_FILE")
+            echo "Creating custom property: $PROP_NAME"
+            PAYLOAD=$(jq ".[$i] | del(.url)" "$PROPS_FILE")
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X PUT \
+              -H "Authorization: Bearer $DEST_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -d "$PAYLOAD" \
+              "https://api.github.com/orgs/$DEST_ORG/properties/schema/$PROP_NAME")
+            HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+            if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "201" ]; then
+              echo "  Created/updated property: $PROP_NAME"
+            else
+              echo "::warning::Failed to create property '$PROP_NAME' (HTTP $HTTP_CODE): $BODY"
+            fi
+          done
+          # Apply per-repo custom property values
+          if [ ! -f migration_successes.txt ]; then
+            echo "No migration successes file - skipping per-repo property values"
+            exit 0
+          fi
+          if [ "$SOURCE_API_URL" = "https://github.com" ]; then
+            SRC_API_BASE="https://api.github.com"
+          else
+            SRC_API_BASE="$SOURCE_API_URL"
+          fi
+          echo "Applying per-repo custom property values..."
+          while IFS= read -r LINE || [ -n "$LINE" ]; do
+            [ -z "$LINE" ] && continue
+            SRC_REPO=$(echo "$LINE" | awk '{print $1}')
+            TGT_REPO=$(echo "$LINE" | awk '{print $2}')
+            TGT_ORG=$(echo "$LINE" | awk '{print $4}')
+            VALUES=$(curl -s -H "Authorization: Bearer $SRC_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "$SRC_API_BASE/repos/$SOURCE_ORG/$SRC_REPO/properties/values")
+            if echo "$VALUES" | jq -e 'type == "array" and length > 0' > /dev/null 2>&1; then
+              PAYLOAD=$(echo "$VALUES" | jq '{properties: .}')
+              curl -s -X PATCH \
+                -H "Authorization: Bearer $DEST_PAT" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                -d "$PAYLOAD" \
+                "https://api.github.com/repos/$TGT_ORG/$TGT_REPO/properties/values" > /dev/null
+              echo "  Applied property values for: $TGT_REPO"
+            fi
+          done < migration_successes.txt
+      - name: Generate secrets report in summary
+        env:
+          DEST_ORG: ${{ github.event.inputs.destination_org }}
+        run: |
+          echo "## Organization Assets Migration" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f org_assets/rulesets.json ]; then
+            RULESET_COUNT=$(jq 'length' org_assets/rulesets.json)
+            echo "### Rulesets" >> $GITHUB_STEP_SUMMARY
+            echo "- Exported: $RULESET_COUNT" >> $GITHUB_STEP_SUMMARY
+            if [ -f ruleset_warnings.txt ]; then
+              echo "- Warnings:" >> $GITHUB_STEP_SUMMARY
+              while IFS= read -r line; do
+                echo "  - $line" >> $GITHUB_STEP_SUMMARY
+              done < ruleset_warnings.txt
+            fi
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f org_assets/variables.json ]; then
+            VAR_COUNT=$(jq 'length' org_assets/variables.json)
+            echo "### Variables" >> $GITHUB_STEP_SUMMARY
+            echo "- Migrated: $VAR_COUNT" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f org_assets/custom_properties.json ]; then
+            PROP_COUNT=$(jq 'length' org_assets/custom_properties.json)
+            echo "### Custom Properties" >> $GITHUB_STEP_SUMMARY
+            echo "- Migrated: $PROP_COUNT schemas" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f org_assets/secrets_report.json ] && [ "$(jq 'length' org_assets/secrets_report.json)" -gt 0 ]; then
+            echo "### Secrets (Manual Action Required)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The following secrets exist in the source org but **cannot be migrated automatically** (values are not readable via API):" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Secret Name | Visibility |" >> $GITHUB_STEP_SUMMARY
+            echo "|-------------|------------|" >> $GITHUB_STEP_SUMMARY
+            jq -r '.[] | "| \(.name) | \(.visibility) |"' org_assets/secrets_report.json >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Please recreate these secrets manually in \`$DEST_ORG\`." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+  # =============================================================================
+  # POST-MIGRATION
+  # =============================================================================
+  post-migration:
+    runs-on: ${{ github.event.inputs.runner_type == 'prod' && fromJSON(vars.PROD_SCHEDULE_RUNNERS) || fromJSON(vars.TEST_RUNNERS) }}
+    needs: [migrate-org, apply-org-assets]
+    if: always() && needs.migrate-org.result == 'success'
+    steps:
+      - name: Download migration successes
+        uses: actions/download-artifact@v4
+        with:
+          name: migration-successes
+        continue-on-error: true
+
+      - name: Set migrated repos to internal visibility
+        if: github.event.inputs.set_visibility_internal == 'true'
+        env:
+          DEST_PAT: ${{ env.DEST_GITHUB_TOKEN }}
+        run: |
+          if [ ! -f migration_successes.txt ]; then
+            echo "No successful migrations to process."
+            exit 0
+          fi
+          echo "Setting migrated repos to internal visibility..."
+          while IFS= read -r LINE || [ -n "$LINE" ]; do
+            [ -z "$LINE" ] && continue
+            TGT_REPO=$(echo "$LINE" | awk '{print $2}')
+            TGT_ORG=$(echo "$LINE" | awk '{print $4}')
+            echo "Setting $TGT_ORG/$TGT_REPO to internal"
+            curl -s -X PATCH \
+              -H "Authorization: Bearer $DEST_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -d '{"visibility": "internal"}' \
+              "https://api.github.com/repos/$TGT_ORG/$TGT_REPO"
+          done < migration_successes.txt
+      - name: Remove branch protections
+        env:
+          GH_TOKEN: ${{ env.DEST_GITHUB_TOKEN }}
+        continue-on-error: true
+        run: |
+          if [ ! -f migration_successes.txt ]; then
+            echo "No successful migrations to process."
+            exit 0
+          fi
+          echo "Triggering remove-branch-protections workflow..."
+          OWNER_REPO_ARRAY="["
+          FIRST=true
+          while IFS= read -r LINE || [ -n "$LINE" ]; do
+            [ -z "$LINE" ] && continue
+            TGT_REPO=$(echo "$LINE" | awk '{print $2}')
+            TGT_ORG=$(echo "$LINE" | awk '{print $4}')
+            if [ "$FIRST" = true ]; then
+              OWNER_REPO_ARRAY="${OWNER_REPO_ARRAY}\"$TGT_ORG/$TGT_REPO\""
+              FIRST=false
+            else
+              OWNER_REPO_ARRAY="${OWNER_REPO_ARRAY},\"$TGT_ORG/$TGT_REPO\""
+            fi
+          done < migration_successes.txt
+          OWNER_REPO_ARRAY="${OWNER_REPO_ARRAY}]"
+          gh workflow run remove-branch-protections.yml \
+            --repo hcsc-devops/GHA-CICD-Pipelines-Admin \
+            --ref main \
+            --field owner_repo="$OWNER_REPO_ARRAY" \
+            --field branch_list="[]"
+      - name: "Trigger team assignment (GHES fallback only)"
+        if: github.event.inputs.assign_teams == 'true' && needs.migrate-org.outputs.migration_type == 'repo'
+        env:
+          GH_TOKEN: ${{ env.DEST_GITHUB_TOKEN }}
+        continue-on-error: true
+        run: |
+          if [ ! -f migration_successes.txt ]; then
+            echo "No successful migrations to process."
+            exit 0
+          fi
+          echo "Triggering assign-teams workflow (GHES migration - teams not migrated by GEI)..."
+          REPOS=""
+          while IFS= read -r LINE || [ -n "$LINE" ]; do
+            [ -z "$LINE" ] && continue
+            TGT_REPO=$(echo "$LINE" | awk '{print $2}')
+            TGT_ORG=$(echo "$LINE" | awk '{print $4}')
+            if [ -n "$REPOS" ]; then
+              REPOS="$REPOS,$TGT_ORG/$TGT_REPO"
+            else
+              REPOS="$TGT_ORG/$TGT_REPO"
+            fi
+          done < migration_successes.txt
+          gh workflow run assign-teams.yml \
+            --repo hcsc-devops/GHA-CICD-Pipelines-Admin \
+            --ref main \
+            --field repos="$REPOS" || echo "::warning::Failed to trigger assign-teams workflow"
+  # =============================================================================
+  # ARCHIVE SOURCE REPOS
+  # =============================================================================
+  archive-source-repos:
+    runs-on: ${{ github.event.inputs.runner_type == 'prod' && fromJSON(vars.PROD_SCHEDULE_RUNNERS) || fromJSON(vars.TEST_RUNNERS) }}
+    needs: migrate-org
+    if: github.event.inputs.archive_source_repos == 'true' && needs.migrate-org.result == 'success'
+    steps:
+      - name: Download migration successes
+        uses: actions/download-artifact@v4
+        with:
+          name: migration-successes
+        continue-on-error: true
+
+      - name: Archive source repositories
+        env:
+          SRC_PAT: ${{ github.event.inputs.source_api_url == 'https://github.com' && secrets.SOURCE_GITHUB_COM_TOKEN || (github.event.inputs.runner_type == 'prod' && secrets.SOURCE_GITHUB_TOKEN || secrets.SOURCE_TEST_GITHUB_TOKEN) }}
+          SOURCE_API_URL: ${{ github.event.inputs.source_api_url }}
+        continue-on-error: true
+        run: |
+          set +e
+          if [ ! -f migration_successes.txt ]; then
+            echo "No successful migrations to archive."
+            exit 0
+          fi
+          if [ "$SOURCE_API_URL" = "https://github.com" ]; then
+            API_BASE="https://api.github.com"
+          else
+            API_BASE="$SOURCE_API_URL"
+          fi
+          MAX_CONCURRENT=$(printf "%d" "${{ github.event.inputs.max_concurrent }}")
+          PIDS=()
+          i=0
+          running=0
+          echo "Archiving source repositories..."
+          while IFS= read -r LINE || [ -n "$LINE" ]; do
+            [ -z "$LINE" ] && continue
+            SRC_REPO=$(echo "$LINE" | awk '{print $1}')
+            SRC_ORG=$(echo "$LINE" | awk '{print $3}')
+            echo "Archiving: $SRC_ORG/$SRC_REPO"
+            curl -s -X PATCH \
+              -H "Authorization: Bearer $SRC_PAT" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -d '{"archived": true}' \
+              "$API_BASE/repos/$SRC_ORG/$SRC_REPO" > "archive_${SRC_REPO}.log" 2>&1 &
+            PIDS[$i]=$!
+            REPO_LINES[$i]="$SRC_ORG/$SRC_REPO"
+            i=$((i+1))
+            running=$((running+1))
+            if [ "$running" -ge "$MAX_CONCURRENT" ]; then
+              wait -n
+              for idx in "${!PIDS[@]}"; do
+                if ! kill -0 ${PIDS[$idx]} 2>/dev/null; then
+                  wait ${PIDS[$idx]}
+                  exit_code=$?
+                  if [ $exit_code -eq 0 ]; then
+                    echo "  Archived: ${REPO_LINES[$idx]}"
+                  else
+                    echo "::warning::Archive failed for: ${REPO_LINES[$idx]}"
+                  fi
+                  unset PIDS[$idx]
+                  unset REPO_LINES[$idx]
+                  running=$((running-1))
+                  break
+                fi
+              done
+            fi
+          done < migration_successes.txt
+          # Wait for remaining
+          for idx in "${!PIDS[@]}"; do
+            if [ -n "${PIDS[$idx]+x}" ]; then
+              wait ${PIDS[$idx]}
+              exit_code=$?
+              if [ $exit_code -eq 0 ]; then
+                echo "  Archived: ${REPO_LINES[$idx]}"
+              else
+                echo "::warning::Archive failed for: ${REPO_LINES[$idx]}"
+              fi
+            fi
+          done
